@@ -3,73 +3,107 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>travel recommendation ✈️</title>
+    <title>Travel Recommendation ✈️</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        *{
-            font-family: Poppins, sans-serif;
+        * {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         body {
-            margin: 0;
-            padding: 0;
-        }
-        .navbar {
+            /* background-image: url('background1.jpg');
+            background-size: cover;
+            background-position: center;
+            color: #fff;
+            text-align: center; */
+    background-image: url('background1.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    width: 100%;
+}
+.navbar {
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            background-color: #333;
-            padding: 10px;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 12px;
+            border-radius: 20px;
+            margin: 10px;
         }
         .logo img {
-            height: 40px;
+            height: 50px;
         }
         .nav-links {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
+            list-style: none;
             display: flex;
         }
         .nav-links li {
-            margin: 0 3px;
+            margin: 0 15px;
         }
         .nav-links a {
-            color: white;
             text-decoration: none;
-            padding: 3px 3px;
+            color: #fff;
+            font-weight: 600;
+            padding: 8px 10px;
+            border-radius: 10px;
+            transition: 0.3s;
         }
         .nav-links a:hover {
-            background-color: #575757;
+            background: #4CAF50;
         }
         .search-container {
             display: flex;
             align-items: center;
+            background: white;
+            border-radius: 20px;
+            padding: 5px;
         }
         .search-container input {
-            padding: 3px;
-            margin-right: 3px;
+            border: none;
+            padding: 5px;
+            border-radius: 20px;
+            outline: none;
         }
         .search-container button {
-            padding: 5px 8px;
+            background: #4CAF50;
             border: none;
+            padding: 8px 12px;
+            color: white;
+            margin:2px;
+            border-radius: 10px;
             cursor: pointer;
         }
-        .search-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding:0px;
-            border-radius:10px;
-        }
         .reset-btn {
-            background-color: #f44336;
-            color: white;
-            padding:0px;
-            border-radius:10px;
+            background: #f44336;
         }
-        .header{
-            color:white;
-            font-size :24px;
+        .content {
+            margin-top: 50px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+        .recommendations {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+        .recommendation {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 20px;
+            margin: 10px;
+            border-radius: 10px;
+            width: 300px;
+        }
+        .recommendation img {
+            width: 100%;
+            border-radius: 10px;
         }
     </style>
 </head>
@@ -78,7 +112,6 @@
         <div class="logo">
             <img src="logo.png" alt="Logo">
         </div>
-        <div class="header">TravelBloom</div>
         <ul class="nav-links">
             <li><a href="#">Home</a></li>
             <li><a href="#">About Us</a></li>
@@ -86,21 +119,43 @@
         </ul>
         <div class="search-container">
             <input type="text" id="search" placeholder="Search...">
-            <button class="search-btn" onclick="searchFunction()">Search</button>
+            <button onclick="searchFunction()">Search</button>
             <button class="reset-btn" onclick="resetFunction()">Reset</button>
         </div>
     </div>
-    <!-- <section class="socials">
-     
-    </section> -->
+    
+    <div class="content">Explore the best travel destinations!</div>
+    <div class="recommendations" id="recommendations"></div>
 
     <script>
-        function searchFunction() {
-            let query = document.getElementById('search').value;
-            alert('Searching for: ' + query);
+        async function fetchRecommendations() {
+            const response = await fetch('travel_recommendation_api.json');
+            const data = await response.json();
+            return data;
+        }
+        async function searchFunction() {
+            let query = document.getElementById('search').value.toLowerCase();
+            let recommendations = await fetchRecommendations();
+            let filtered = recommendations.filter(item => item.category.includes(query));
+            displayResults(filtered);
         }
         function resetFunction() {
             document.getElementById('search').value = '';
+            document.getElementById('recommendations').innerHTML = '';
+        }
+        function displayResults(results) {
+            let container = document.getElementById('recommendations');
+            container.innerHTML = '';
+            results.forEach(item => {
+                let div = document.createElement('div');
+                div.classList.add('recommendation');
+                div.innerHTML = `
+                    <img src="${item.imageUrl}" alt="${item.name}">
+                    <h3>${item.name}</h3>
+                    <p>${item.description}</p>
+                `;
+                container.appendChild(div);
+            });
         }
     </script>
 </body>
